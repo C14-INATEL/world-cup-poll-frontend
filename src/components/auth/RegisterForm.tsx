@@ -2,12 +2,14 @@ import { type SyntheticEvent, useState } from "react"
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { type AuthUser, register } from "@/lib/api"
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void
+  onRegisterSuccess: (user: AuthUser) => void
 }
 
-export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
+export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -16,7 +18,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
-  function handleSubmit(e: SyntheticEvent) {
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     setError("")
 
@@ -33,14 +35,20 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     }
 
     setIsLoading(true)
-    // Mock submit - será integrado com backend futuramente
-    setTimeout(() => {
+    try {
+      const user = await register({ name, email, password })
+      onRegisterSuccess(user)
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao criar usuario"
+      setError(message)
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-5">
+    <form onSubmit={(e) => { void handleSubmit(e) }} className="w-full space-y-5">
       {error && (
         <div className="rounded-lg border border-copa-error/30 bg-copa-error/10 px-4 py-3 text-sm text-copa-error">
           {error}

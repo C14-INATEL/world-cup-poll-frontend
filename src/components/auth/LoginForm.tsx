@@ -2,30 +2,47 @@ import { type SyntheticEvent, useState } from "react"
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { type AuthUser, login } from "@/lib/api"
 
 interface LoginFormProps {
   onSwitchToRegister: () => void
+  onLoginSuccess: (user: AuthUser) => void
 }
 
-export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
+export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  function handleSubmit(e: SyntheticEvent) {
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError("")
+
     if (!email || !password) return
 
     setIsLoading(true)
-    // Mock submit - será integrado com backend futuramente
-    setTimeout(() => {
+    try {
+      const user = await login({ email, password })
+      onLoginSuccess(user)
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao autenticar usuario"
+      setError(message)
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-6">
+    <form onSubmit={(e) => { void handleSubmit(e) }} className="w-full space-y-6">
+      {error && (
+        <div className="rounded-lg border border-copa-error/30 bg-copa-error/10 px-4 py-3 text-sm text-copa-error">
+          {error}
+        </div>
+      )}
+
       <div className="space-y-2">
         <label htmlFor="login-email" className="text-sm text-copa-text-muted">
           Email
