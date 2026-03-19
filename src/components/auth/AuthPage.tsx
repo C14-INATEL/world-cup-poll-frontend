@@ -1,27 +1,14 @@
 import { useState } from "react"
 import { Trophy } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { LoginForm } from "./LoginForm"
 import { RegisterForm } from "./RegisterForm"
-import { type AuthUser } from "@/lib/api"
 
 type AuthView = "login" | "register"
 
 export function AuthPage() {
   const [view, setView] = useState<AuthView>("login")
-  const [loggedUser, setLoggedUser] = useState<AuthUser | null>(null)
-
-  if (loggedUser) {
-    return (
-      <div className="flex min-h-svh items-center justify-center bg-copa-bg p-4">
-        <div className="w-full max-w-md rounded-2xl border border-copa-border bg-copa-surface p-8 text-center shadow-2xl shadow-black/20">
-          <h1 className="text-2xl font-bold text-copa-text">Login realizado</h1>
-          <p className="mt-3 text-copa-text-muted">
-            Bem-vindo, <span className="font-semibold text-copa-text">{loggedUser.name}</span>.
-          </p>
-        </div>
-      </div>
-    )
-  }
+  const navigate = useNavigate()
 
   return (
     <div className="flex min-h-svh items-center justify-center bg-copa-bg p-4">
@@ -54,12 +41,12 @@ export function AuthPage() {
         {view === "login" ? (
           <LoginForm
             onSwitchToRegister={() => { setView("register") }}
-            onLoginSuccess={(user) => { setLoggedUser(user) }}
+            onLoginSuccess={() => { void navigate("/home") }}
           />
         ) : (
           <RegisterForm
             onSwitchToLogin={() => { setView("login") }}
-            onRegisterSuccess={(user) => { setLoggedUser(user) }}
+            onRegisterSuccess={() => { void navigate("/home") }}
           />
         )}
       </div>
