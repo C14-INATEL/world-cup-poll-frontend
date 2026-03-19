@@ -1,7 +1,7 @@
 
 import { useState } from "react"
-import { Button } from "../ui/button"
-import CreateGroupModal from "./CreateGroupModal"
+import { Button } from "./ui/button"
+import { CreateGroupModal } from "./CreateGroupModal"
 
 const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
