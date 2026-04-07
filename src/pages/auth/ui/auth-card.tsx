@@ -176,7 +176,7 @@ export function AuthCard() {
             </div>
           </div>
 
-          <Button type="submit" variant="copa" size="copa" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
@@ -297,7 +297,7 @@ export function AuthCard() {
             </div>
           </div>
 
-          <Button type="submit" variant="copa" size="copa" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />

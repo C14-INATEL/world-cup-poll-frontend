@@ -13,8 +13,6 @@ export function HomeHero() {
         Participe do bolao da Copa. Crie um grupo para desafiar seus amigos e descobrir quem entende mais de futebol.
       </p>
       <Button
-        variant="copa"
-        size="copa"
         className="mt-8 w-full"
         onClick={() => {
           setIsCreateModalOpen(true)

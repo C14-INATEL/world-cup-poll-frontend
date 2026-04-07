@@ -48,8 +48,6 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
 
         <div className="flex gap-4">
           <Button
-            variant="copa-ghost"
-            size="copa"
             className="w-1/2"
             onClick={onClose}
             disabled={createPollMutation.isPending}
@@ -57,8 +55,6 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
             Cancelar
           </Button>
           <Button
-            variant="copa"
-            size="copa"
             className="w-1/2"
             onClick={() => {
               void handleCreate()
