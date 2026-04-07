@@ -1,12 +1,13 @@
-import { BrowserRouter } from 'react-router-dom'
-import { type PropsWithChildren } from 'react'
+import { BrowserRouter } from "react-router-dom";
+import { type PropsWithChildren } from "react";
 
-import { QueryClientAppProvider } from '@/app/providers/query-client-provider'
+import { QueryProvider } from "@/app/providers/query-client-provider";
+import { queryClient } from "@/shared/api/query-client";
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <QueryClientAppProvider>
+    <QueryProvider client={queryClient}>
       <BrowserRouter>{children}</BrowserRouter>
-    </QueryClientAppProvider>
-  )
+    </QueryProvider>
+  );
 }

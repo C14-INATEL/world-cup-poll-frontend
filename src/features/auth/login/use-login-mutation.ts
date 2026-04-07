@@ -1,29 +1,25 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { currentUserQueryKey } from '@/entities/user/use-current-user-query'
-import { type User } from '@/entities/user/types'
-import { api } from '@/shared/api/api'
-import { ENDPOINTS } from '@/shared/constants/endpoints'
+import { type User } from "@/entities/user/types";
+import { api } from "@/shared/api/api";
+import { ENDPOINTS } from "@/shared/constants/endpoints";
+import { userQueryKeys } from "@/entities/user/api/query-keys";
 
 interface LoginPayload {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export function useLoginMutation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: LoginPayload) =>
-      api<User>(ENDPOINTS.auth.login, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+      api.post<User>(ENDPOINTS.auth.login, {
+        ...payload,
       }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: currentUserQueryKey })
+      await queryClient.invalidateQueries({ queryKey: userQueryKeys.me });
     },
-  })
+  });
 }

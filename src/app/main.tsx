@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "sonner";
 
 import { AppProviders } from "@/app/providers/app-providers";
 import "@/app/styles/global.css";
@@ -14,6 +15,12 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <AppProviders>
+      <Toaster
+        position="top-right"
+        richColors={true}
+        mobileOffset={8}
+      />
+
       <AppRouter />
     </AppProviders>
   </StrictMode>,
