@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { type Poll } from '@/entities/poll/model/types'
+import { type Poll } from '@/entities/poll'
 import { api } from '@/shared/api/api'
 import { ENDPOINTS } from '@/shared/constants/endpoints'
 

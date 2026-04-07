@@ -1,20 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-import { App } from '@/app/app'
-import { AppProviders } from '@/app/providers/app-providers'
-import '@/app/styles/global.css'
+import { AppProviders } from "@/app/providers/app-providers";
+import "@/app/styles/global.css";
+import { AppRouter } from "./routes/app-router";
 
-const root_element = document.getElementById('root')
+const rootElement = document.getElementById("root");
 
-if (!root_element) {
-  throw new Error('Root element not found')
+if (!rootElement) {
+  throw new Error("Root element not found");
 }
 
-createRoot(root_element).render(
+createRoot(rootElement).render(
   <StrictMode>
     <AppProviders>
-      <App />
+      <AppRouter />
     </AppProviders>
   </StrictMode>,
-)
+);

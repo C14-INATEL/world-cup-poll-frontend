@@ -1,6 +1,7 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { type User } from '@/entities/user/model/types'
+import { currentUserQueryKey } from '@/entities/user/use-current-user-query'
+import { type User } from '@/entities/user/types'
 import { api } from '@/shared/api/api'
 import { ENDPOINTS } from '@/shared/constants/endpoints'
 
@@ -10,6 +11,8 @@ interface LoginPayload {
 }
 
 export function useLoginMutation() {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: (payload: LoginPayload) =>
       api<User>(ENDPOINTS.auth.login, {
@@ -19,5 +22,8 @@ export function useLoginMutation() {
         },
         body: JSON.stringify(payload),
       }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: currentUserQueryKey })
+    },
   })
 }

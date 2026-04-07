@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
-import { CreatePollModal } from '@/features/poll/create-poll/ui/create-poll-modal'
+import { CreatePollModal } from '@/features/poll/create-poll/create-poll-modal'
 import { Button } from '@/shared/ui/button'
 
 export function HomeHero() {
-  const [is_create_modal_open, set_is_create_modal_open] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   return (
     <div className="relative w-full max-w-md rounded-2xl border border-copa-border bg-copa-surface p-8 text-center shadow-2xl shadow-black/20">
@@ -17,16 +17,16 @@ export function HomeHero() {
         size="copa"
         className="mt-8 w-full"
         onClick={() => {
-          set_is_create_modal_open(true)
+          setIsCreateModalOpen(true)
         }}
       >
         Criar grupo do bolao
       </Button>
 
       <CreatePollModal
-        isOpen={is_create_modal_open}
+        isOpen={isCreateModalOpen}
         onClose={() => {
-          set_is_create_modal_open(false)
+          setIsCreateModalOpen(false)
         }}
       />
     </div>

@@ -24,9 +24,10 @@ Always follow these official documentations:
 
 ---
 
-## Project Structure (Feature-Sliced Design)
+## Project Structure (Feature-Sliced Inspired)
 
-All code **must follow FSD strictly**:
+This project follows a **simplified Feature-Sliced Design (FSD)** approach.
+The goal is to keep the codebase **scalable, maintainable, and easy to navigate**, without unnecessary complexity.
 
 ```
 src/
@@ -34,7 +35,6 @@ src/
     providers/
     routes/
   pages/
-  widgets/
   features/
   entities/
   shared/
@@ -44,14 +44,44 @@ src/
     constants/
 ```
 
+---
+
 ### Layer Responsibilities
 
-* `app/` → global providers, routing
-* `pages/` → route-level screens
-* `widgets/` → large UI blocks (composed features/entities)
-* `features/` → user actions (login, create poll, invite, etc.)
-* `entities/` → business models (user, poll, game, guess)
-* `shared/` → reusable infrastructure (UI, API, utils, constants)
+* **app/**
+  Application entry point and global setup (providers, routing, global configs).
+
+* **pages/**
+  Route-level components.
+  Responsible for composing features and entities into screens.
+  Should contain minimal business logic.
+
+* **features/**
+  User-driven actions and flows (e.g., login, create poll, invite user).
+  Encapsulates business logic, state, and UI related to specific interactions.
+
+* **entities/**
+  Core business models (e.g., user, poll, game, guess).
+  Contains types, API calls, and minimal domain logic.
+
+* **shared/**
+  Reusable, app-agnostic code.
+  Includes UI components, utilities, API clients, and constants.
+  Should not depend on other layers.
+
+---
+
+### Guidelines
+
+* Prefer **organization by domain (feature/entity)** over file type.
+* Keep dependencies **unidirectional**:
+
+  ```
+  app → pages → features → entities → shared
+  ```
+* Avoid cross-layer imports that break this flow.
+* Use **barrel files (`index.ts`)** to simplify imports.
+* Keep pages thin — move logic to features whenever possible.
 
 ---
 
@@ -120,7 +150,16 @@ Use **TanStack React Query** for all server state.
 
 ### Query Keys
 
-Use structured keys:
+Use structured keys and create a file to define keys:
+
+```ts
+// entities/*/api/query-keys.ts
+export const userQueryKeys = {
+  all: ['users'],
+  single: (userId: string) => ['users', userId],
+  me: ['users', 'me'],
+};
+```
 
 ```
 ["entity", "scope", params]
@@ -162,33 +201,6 @@ Backend: `http://localhost:3333`
   "data": {}
 }
 ```
-
----
-
-### API Client
-
-Create a shared API utility:
-
-```ts
-// shared/api/api.ts
-export async function api<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
-  const response = await fetch(input, {
-    credentials: "include",
-    ...init,
-  });
-
-  const json = await response.json();
-
-  if (json.error) {
-    throw new Error(json.error);
-  }
-
-  return json.data;
-}
-```
-
-* Always use `Fetch API`
-* Always include `credentials: "include"`
 
 ---
 
@@ -319,6 +331,31 @@ type User = {
 * Server state → React Query
 * Local state → `useState`
 * Avoid global state unless necessary
+
+---
+
+## Forms & Validation
+
+Use **React Hook Form** + **Zod** for all forms.
+
+### Rules
+
+* Use `react-hook-form` to manage form state and submission
+* Use `zod` schemas as the single source of truth for validation
+* Integrate with `@hookform/resolvers/zod` via `zodResolver`
+* Keep schemas close to the feature/entity that owns the form
+* Show field-level validation messages in the UI
+* Avoid manual validation logic inside components when schema validation can cover it
+
+### Placement
+
+* `features/*/model` or `entities/*/model` → form schemas/types
+* `features/*/ui` → form components using `useForm`
+
+### Naming Convention
+
+* Schema → `xSchema` (example: `loginSchema`)
+* Inferred type → `XFormValues` (example: `LoginFormValues`)
 
 ---
 

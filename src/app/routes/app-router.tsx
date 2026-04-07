@@ -1,10 +1,12 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { PrivateRoute } from '@/app/routes/private-route'
+import { PublicRoute } from '@/app/routes/public-route'
 import { ROUTES } from '@/shared/constants/routes'
 
-const AuthPage = lazy(() => import('@/pages/auth-page/ui/auth-page').then((module) => ({ default: module.AuthPage })))
-const HomePage = lazy(() => import('@/pages/home-page/ui/home-page').then((module) => ({ default: module.HomePage })))
+const AuthPage = lazy(() => import('@/pages/auth').then((module) => ({ default: module.AuthPage })))
+const HomePage = lazy(() => import('@/pages/home').then((module) => ({ default: module.HomePage })))
 
 function PageFallback() {
   return (
@@ -18,10 +20,16 @@ export function AppRouter() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
-        <Route path={ROUTES.root} element={<Navigate to={ROUTES.auth} replace />} />
-        <Route path={ROUTES.auth} element={<AuthPage />} />
-        <Route path={ROUTES.home} element={<HomePage />} />
-        <Route path="*" element={<Navigate to={ROUTES.auth} replace />} />
+        <Route element={<PublicRoute />}>
+          <Route path={ROUTES.auth} element={<AuthPage />} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route path={ROUTES.home} element={<HomePage />} />
+        </Route>
+
+        <Route path={ROUTES.root} element={<Navigate to={ROUTES.home} replace />} />
+        <Route path="*" element={<Navigate to={ROUTES.root} replace />} />
       </Routes>
     </Suspense>
   )

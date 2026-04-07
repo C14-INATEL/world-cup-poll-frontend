@@ -3,8 +3,8 @@ import { Eye, EyeOff, Loader2, Lock, Mail, Trophy, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { type SyntheticEvent } from 'react'
 
-import { useLoginMutation } from '@/features/auth/login/api/use-login-mutation'
-import { useRegisterMutation } from '@/features/auth/register/api/use-register-mutation'
+import { useLoginMutation } from '@/features/auth/login/use-login-mutation'
+import { useRegisterMutation } from '@/features/auth/register/use-register-mutation'
 import { ROUTES } from '@/shared/constants/routes'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
@@ -12,42 +12,42 @@ import { Input } from '@/shared/ui/input'
 type AuthView = 'login' | 'register'
 
 export function AuthCard() {
-  const [view, set_view] = useState<AuthView>('login')
-  const [show_password, set_show_password] = useState(false)
+  const [view, setView] = useState<AuthView>('login')
+  const [showPassword, setShowPassword] = useState(false)
 
-  const [name, set_name] = useState('')
-  const [email, set_email] = useState('')
-  const [password, set_password] = useState('')
-  const [confirm_password, set_confirm_password] = useState('')
-  const [validation_error, set_validation_error] = useState('')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [validationError, setValidationError] = useState('')
 
   const navigate = useNavigate()
 
-  const login_mutation = useLoginMutation()
-  const register_mutation = useRegisterMutation()
+  const loginMutation = useLoginMutation()
+  const registerMutation = useRegisterMutation()
 
-  const is_loading = login_mutation.isPending || register_mutation.isPending
-  const mutation_error = login_mutation.error ?? register_mutation.error
+  const isLoading = loginMutation.isPending || registerMutation.isPending
+  const mutationError = loginMutation.error ?? registerMutation.error
 
-  function clear_form_state() {
-    set_name('')
-    set_email('')
-    set_password('')
-    set_confirm_password('')
-    set_validation_error('')
-    set_show_password(false)
+  function clearFormState() {
+    setName('')
+    setEmail('')
+    setPassword('')
+    setConfirmPassword('')
+    setValidationError('')
+    setShowPassword(false)
   }
 
-  async function handle_login_submit(event: SyntheticEvent<HTMLFormElement>) {
+  async function handleLoginSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
-    set_validation_error('')
+    setValidationError('')
 
     if (!email || !password) {
-      set_validation_error('Preencha email e senha.')
+      setValidationError('Preencha email e senha.')
       return
     }
 
-    await login_mutation.mutateAsync(
+    await loginMutation.mutateAsync(
       { email, password },
       {
         onSuccess: () => {
@@ -57,26 +57,26 @@ export function AuthCard() {
     )
   }
 
-  async function handle_register_submit(event: SyntheticEvent<HTMLFormElement>) {
+  async function handleRegisterSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
-    set_validation_error('')
+    setValidationError('')
 
-    if (!name || !email || !password || !confirm_password) {
-      set_validation_error('Preencha todos os campos.')
+    if (!name || !email || !password || !confirmPassword) {
+      setValidationError('Preencha todos os campos.')
       return
     }
 
-    if (password !== confirm_password) {
-      set_validation_error('As senhas nao coincidem.')
+    if (password !== confirmPassword) {
+      setValidationError('As senhas nao coincidem.')
       return
     }
 
     if (password.length < 6) {
-      set_validation_error('A senha deve ter pelo menos 6 caracteres.')
+      setValidationError('A senha deve ter pelo menos 6 caracteres.')
       return
     }
 
-    await register_mutation.mutateAsync(
+    await registerMutation.mutateAsync(
       { name, email, password },
       {
         onSuccess: () => {
@@ -86,13 +86,13 @@ export function AuthCard() {
     )
   }
 
-  function error_message() {
-    if (validation_error) {
-      return validation_error
+  function errorMessage() {
+    if (validationError) {
+      return validationError
     }
 
-    if (mutation_error instanceof Error) {
-      return mutation_error.message
+    if (mutationError instanceof Error) {
+      return mutationError.message
     }
 
     return ''
@@ -114,16 +114,16 @@ export function AuthCard() {
         </div>
       </div>
 
-      {error_message() && (
+      {errorMessage() && (
         <div className="mb-5 rounded-lg border border-copa-error/30 bg-copa-error/10 px-4 py-3 text-sm text-copa-error">
-          {error_message()}
+          {errorMessage()}
         </div>
       )}
 
       {view === 'login' ? (
         <form
           onSubmit={(event) => {
-            void handle_login_submit(event)
+            void handleLoginSubmit(event)
           }}
           className="w-full space-y-6"
         >
@@ -139,7 +139,7 @@ export function AuthCard() {
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(event) => {
-                  set_email(event.target.value)
+                  setEmail(event.target.value)
                 }}
                 className="pl-10"
                 required
@@ -155,11 +155,11 @@ export function AuthCard() {
               <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-copa-text-muted" />
               <Input
                 id="login-password"
-                type={show_password ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(event) => {
-                  set_password(event.target.value)
+                  setPassword(event.target.value)
                 }}
                 className="pl-10 pr-10"
                 required
@@ -167,17 +167,17 @@ export function AuthCard() {
               <button
                 type="button"
                 onClick={() => {
-                  set_show_password((state) => !state)
+                  setShowPassword((state) => !state)
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-copa-text-muted transition-colors hover:text-copa-text"
               >
-                {show_password ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
           </div>
 
-          <Button type="submit" variant="copa" size="copa" className="w-full" disabled={is_loading}>
-            {is_loading ? (
+          <Button type="submit" variant="copa" size="copa" className="w-full" disabled={isLoading}>
+            {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
                 Entrando...
@@ -192,8 +192,8 @@ export function AuthCard() {
             <button
               type="button"
               onClick={() => {
-                clear_form_state()
-                set_view('register')
+                clearFormState()
+                setView('register')
               }}
               className="font-medium text-copa-accent transition-colors hover:text-copa-accent-hover"
             >
@@ -204,7 +204,7 @@ export function AuthCard() {
       ) : (
         <form
           onSubmit={(event) => {
-            void handle_register_submit(event)
+            void handleRegisterSubmit(event)
           }}
           className="w-full space-y-5"
         >
@@ -220,7 +220,7 @@ export function AuthCard() {
                 placeholder="Seu nome"
                 value={name}
                 onChange={(event) => {
-                  set_name(event.target.value)
+                  setName(event.target.value)
                 }}
                 className="pl-10"
                 required
@@ -240,7 +240,7 @@ export function AuthCard() {
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(event) => {
-                  set_email(event.target.value)
+                  setEmail(event.target.value)
                 }}
                 className="pl-10"
                 required
@@ -256,11 +256,11 @@ export function AuthCard() {
               <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-copa-text-muted" />
               <Input
                 id="register-password"
-                type={show_password ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Minimo 6 caracteres"
                 value={password}
                 onChange={(event) => {
-                  set_password(event.target.value)
+                  setPassword(event.target.value)
                 }}
                 className="pl-10 pr-10"
                 required
@@ -268,11 +268,11 @@ export function AuthCard() {
               <button
                 type="button"
                 onClick={() => {
-                  set_show_password((state) => !state)
+                  setShowPassword((state) => !state)
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-copa-text-muted transition-colors hover:text-copa-text"
               >
-                {show_password ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
           </div>
@@ -285,11 +285,11 @@ export function AuthCard() {
               <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-copa-text-muted" />
               <Input
                 id="register-confirm"
-                type={show_password ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Repita a senha"
-                value={confirm_password}
+                value={confirmPassword}
                 onChange={(event) => {
-                  set_confirm_password(event.target.value)
+                  setConfirmPassword(event.target.value)
                 }}
                 className="pl-10"
                 required
@@ -297,8 +297,8 @@ export function AuthCard() {
             </div>
           </div>
 
-          <Button type="submit" variant="copa" size="copa" className="w-full" disabled={is_loading}>
-            {is_loading ? (
+          <Button type="submit" variant="copa" size="copa" className="w-full" disabled={isLoading}>
+            {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
                 Criando conta...
@@ -313,8 +313,8 @@ export function AuthCard() {
             <button
               type="button"
               onClick={() => {
-                clear_form_state()
-                set_view('login')
+                clearFormState()
+                setView('login')
               }}
               className="font-medium text-copa-accent transition-colors hover:text-copa-accent-hover"
             >

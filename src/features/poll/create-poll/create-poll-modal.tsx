@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useCreatePollMutation } from '@/features/poll/create-poll/api/use-create-poll-mutation'
+import { useCreatePollMutation } from '@/features/poll/create-poll/use-create-poll-mutation'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 
@@ -10,18 +10,18 @@ interface CreatePollModalProps {
 }
 
 export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
-  const [poll_title, set_poll_title] = useState('')
-  const create_poll_mutation = useCreatePollMutation()
+  const [pollTitle, setPollTitle] = useState('')
+  const createPollMutation = useCreatePollMutation()
 
   if (!isOpen) {
     return null
   }
 
-  const can_submit = poll_title.trim().length > 0 && !create_poll_mutation.isPending
+  const canSubmit = pollTitle.trim().length > 0 && !createPollMutation.isPending
 
-  async function handle_create() {
-    await create_poll_mutation.mutateAsync({ title: poll_title.trim() })
-    set_poll_title('')
+  async function handleCreate() {
+    await createPollMutation.mutateAsync({ title: pollTitle.trim() })
+    setPollTitle('')
     onClose()
   }
 
@@ -31,17 +31,17 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
         <h2 className="mb-6 text-2xl font-bold text-copa-text">Criar grupo</h2>
         <Input
           placeholder="Nome do grupo"
-          value={poll_title}
+          value={pollTitle}
           onChange={(event) => {
-            set_poll_title(event.target.value)
+            setPollTitle(event.target.value)
           }}
           className="mb-6"
         />
 
-        {create_poll_mutation.isError && (
+        {createPollMutation.isError && (
           <div className="mb-6 rounded-lg border border-copa-error/30 bg-copa-error/10 px-4 py-3 text-left text-sm text-copa-error">
-            {create_poll_mutation.error instanceof Error
-              ? create_poll_mutation.error.message
+            {createPollMutation.error instanceof Error
+              ? createPollMutation.error.message
               : 'Erro ao criar grupo'}
           </div>
         )}
@@ -52,7 +52,7 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
             size="copa"
             className="w-1/2"
             onClick={onClose}
-            disabled={create_poll_mutation.isPending}
+            disabled={createPollMutation.isPending}
           >
             Cancelar
           </Button>
@@ -61,11 +61,11 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
             size="copa"
             className="w-1/2"
             onClick={() => {
-              void handle_create()
+              void handleCreate()
             }}
-            disabled={!can_submit}
+            disabled={!canSubmit}
           >
-            {create_poll_mutation.isPending ? 'Criando...' : 'Criar'}
+            {createPollMutation.isPending ? 'Criando...' : 'Criar'}
           </Button>
         </div>
       </div>
