@@ -8,6 +8,7 @@ import { ENDPOINTS } from "@/shared/constants/endpoints";
 
 interface CreatePollPayload {
   title: string;
+  code: string;
 }
 
 export function useCreatePollMutation() {

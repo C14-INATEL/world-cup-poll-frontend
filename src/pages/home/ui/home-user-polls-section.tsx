@@ -1,4 +1,4 @@
-import { Copy, Users } from "lucide-react";
+import { Copy, Plus, Users } from "lucide-react";
 
 import { type Poll } from "@/entities/poll";
 import { Button } from "@/shared/ui/button";
@@ -28,6 +28,10 @@ export function HomeUserPollsSection({
       <div className="mb-4 flex items-center gap-2">
         <Users className="text-muted-foreground" />
         <h2 className="text-base font-semibold text-card-foreground">Meus grupos</h2>
+
+        <Button className="ml-auto" onClick={onCreatePoll}>
+          <Plus /> Novo
+        </Button>
       </div>
 
       {isPending && (
