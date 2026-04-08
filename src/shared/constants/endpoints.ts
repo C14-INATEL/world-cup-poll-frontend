@@ -5,7 +5,11 @@ export const ENDPOINTS = {
     logout: '/auth/logout',
     me: '/me',
   },
+  game: {
+    list: '/games',
+  },
   poll: {
     create: '/poll/create',
+    user: '/polls/user',
   },
 } as const

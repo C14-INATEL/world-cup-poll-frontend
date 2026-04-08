@@ -1,34 +1,55 @@
 import { CreatePollModal } from "@/features/poll";
-import { Button } from "@/shared/ui/button";
+import { useUserPollsQuery } from "@/entities/poll";
+import { useNextGamesQuery } from "@/entities/game";
+import {
+  HomeHeaderSection,
+  HomeNextGamesSection,
+  HomeUserPollsSection,
+} from "@/pages/home/ui";
 import { useState } from "react";
 
 export function HomePage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  return (
-    <div className="flex items-center justify-center p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-copa-border bg-copa-surface p-8 text-center shadow-2xl shadow-black/20">
-        <h1 className="text-2xl font-bold text-copa-text">Bem-vindo</h1>
-        <p className="mt-3 text-copa-text-muted">
-          Participe do bolao da Copa. Crie um grupo para desafiar seus amigos e descobrir quem
-          entende mais de futebol.
-        </p>
-        <Button
-          className="mt-8 w-full"
-          onClick={() => {
-            setIsCreateModalOpen(true);
-          }}
-        >
-          Criar grupo do bolao
-        </Button>
+  const {
+    data: nextGames,
+    isPending: isNextGamesPending,
+    isError: isNextGamesError,
+  } = useNextGamesQuery({ limit: 5 });
 
-        <CreatePollModal
-          isOpen={isCreateModalOpen}
-          onClose={() => {
-            setIsCreateModalOpen(false);
+  const {
+    data: userPolls,
+    isPending: isUserPollsPending,
+    isError: isUserPollsError,
+  } = useUserPollsQuery();
+
+  return (
+    <div className="flex w-full flex-col gap-6">
+      <HomeHeaderSection />
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_1fr]">
+        <HomeNextGamesSection
+          games={nextGames}
+          isPending={isNextGamesPending}
+          isError={isNextGamesError}
+        />
+
+        <HomeUserPollsSection
+          polls={userPolls}
+          isPending={isUserPollsPending}
+          isError={isUserPollsError}
+          onCreatePoll={() => {
+            setIsCreateModalOpen(true);
           }}
         />
       </div>
+
+      <CreatePollModal
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+        }}
+      />
     </div>
   );
 }
