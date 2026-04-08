@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { useAuth } from "@/app/providers/auth/use-auth";
 import { ROUTES } from "@/shared/constants/routes";
-import { DividedLayout } from "@/shared/ui/layouts/divided-layout";
+import { DividedLayout } from "@/app/layouts/divided-layout";
 import { Input } from "@/shared/ui/input";
 import { Lock, Mail, Trophy, User } from "lucide-react";
 import { Button } from "@/shared/ui/button";
