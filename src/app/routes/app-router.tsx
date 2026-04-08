@@ -10,7 +10,7 @@ const HomePage = lazy(() => import('@/pages/home').then((module) => ({ default: 
 
 function PageFallback() {
   return (
-    <div className="flex min-h-svh items-center justify-center bg-copa-bg text-copa-text-muted">
+    <div className="flex min-h-dvh items-center justify-center">
       Carregando...
     </div>
   )

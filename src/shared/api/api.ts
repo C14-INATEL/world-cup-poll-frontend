@@ -88,12 +88,13 @@ api.interceptors.response.use(
 
       if (status === 401) {
         logoutCallback?.();
+        return Promise.reject(error);
       }
 
-      const message = body?.error ?? error.message ?? "Erro desconhecido";
-      toast.error(message);
-    } else {
-      toast.error("Erro desconhecido");
+      const message = body?.error ?? error.message;
+      if (message) {
+        toast.error(message);
+      }
     }
 
     return Promise.reject(error);

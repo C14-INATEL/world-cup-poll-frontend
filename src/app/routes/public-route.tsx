@@ -4,13 +4,13 @@ import { useCurrentUserQuery } from '@/entities/user/use-current-user-query'
 import { ROUTES } from '@/shared/constants/routes'
 
 function GuardFallback() {
-  return <div className="flex min-h-svh items-center justify-center text-copa-text-muted">Carregando...</div>
+  return <div className="flex min-h-dvh items-center justify-center">Carregando...</div>
 }
 
 export function PublicRoute() {
-  const { data: user, isPending, isFetching, isError } = useCurrentUserQuery()
+  const { data: user, isPending, isError } = useCurrentUserQuery()
 
-  if (isPending || isFetching) {
+  if (isPending) {
     return <GuardFallback />
   }
 
