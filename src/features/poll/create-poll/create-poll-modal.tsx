@@ -26,9 +26,9 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-copa-bg/80 p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-copa-border bg-copa-surface p-8 text-center shadow-2xl shadow-black/20">
-        <h2 className="mb-6 text-2xl font-bold text-copa-text">Criar grupo</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-popover-foreground/50  p-4">
+      <div className="relative w-full max-w-md rounded-2xl border border-copa-border bg-popover p-8 text-center shadow-2xl shadow-black/20">
+        <h2 className="mb-6 text-2xl font-bold">Criar grupo</h2>
         <Input
           placeholder="Nome do grupo"
           value={pollTitle}
