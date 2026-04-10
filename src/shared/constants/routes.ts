@@ -1,5 +1,5 @@
 export const ROUTES = {
   root: '/',
-  auth: '/auth',
+  auth: '/login',
   home: '/home',
 } as const

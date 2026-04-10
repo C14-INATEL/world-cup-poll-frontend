@@ -4,6 +4,10 @@ export interface User {
   email: string;
 }
 
+export interface AuthSession extends User {
+  token: string;
+}
+
 export interface UserLogin {
   email: string;
   password: string;

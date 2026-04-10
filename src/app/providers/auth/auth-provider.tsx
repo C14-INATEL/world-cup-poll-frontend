@@ -2,7 +2,7 @@ import { userQueryKeys } from "@/entities/user/api/query-keys";
 import { useCurrentUserQuery } from "@/entities/user/use-current-user-query";
 import { type User, type UserLogin, type UserRegister } from "@/entities/user/types";
 import { useLoginMutation, useRegisterMutation } from "@/features/auth";
-import { api, registerLogoutCallback } from "@/shared/api/api";
+import { api, clearAuthToken, registerLogoutCallback, setAuthToken } from "@/shared/api/api";
 import { ENDPOINTS } from "@/shared/constants/endpoints";
 import { useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
@@ -12,24 +12,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   const [user, setUser] = useState<User | null>(null);
-  const { data: currentUser, isPending, isFetching, isError } = useCurrentUserQuery();
+  const { data: currentUser, isLoading, isFetching, isError } = useCurrentUserQuery();
 
   const loginMutation = useLoginMutation();
   const registerMutation = useRegisterMutation();
 
-  const login = useCallback(async (input: UserLogin) => {
-    const authenticatedUser = await loginMutation.mutateAsync(input);
-    setUser(authenticatedUser);
-    queryClient.setQueryData(userQueryKeys.me, authenticatedUser);
-  }, [loginMutation, queryClient]);
+  const login = useCallback(
+    async (input: UserLogin) => {
+      const authSession = await loginMutation.mutateAsync(input);
+      const { token: _token, ...authenticatedUser } = authSession;
+      setAuthToken(authSession.token);
+      setUser(authenticatedUser);
+      queryClient.setQueryData(userQueryKeys.me, authenticatedUser);
+    },
+    [loginMutation, queryClient],
+  );
 
-  const register = useCallback(async (input: UserRegister) => {
-    const authenticatedUser = await registerMutation.mutateAsync(input);
-    setUser(authenticatedUser);
-    queryClient.setQueryData(userQueryKeys.me, authenticatedUser);
-  }, [queryClient, registerMutation]);
+  const register = useCallback(
+    async (input: UserRegister) => {
+      const authSession = await registerMutation.mutateAsync(input);
+      const { token: _token, ...authenticatedUser } = authSession;
+      setAuthToken(authSession.token);
+      setUser(authenticatedUser);
+      queryClient.setQueryData(userQueryKeys.me, authenticatedUser);
+    },
+    [queryClient, registerMutation],
+  );
 
   const clearSession = useCallback(() => {
+    clearAuthToken();
     setUser(null);
     queryClient.setQueryData(userQueryKeys.me, null);
   }, [queryClient]);
@@ -57,7 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [currentUser, isError]);
 
-  const isAuthLoading = isPending || isFetching || loginMutation.isPending || registerMutation.isPending;
+  const isAuthLoading =
+    isLoading || isFetching || loginMutation.isPending || registerMutation.isPending;
 
   const value = useMemo(
     () => ({
