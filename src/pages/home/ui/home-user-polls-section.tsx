@@ -1,9 +1,11 @@
-import { Copy, Plus, Users } from "lucide-react";
+import { useState } from "react";
+import { Copy, Pencil, Plus, Users } from "lucide-react";
+import { toast } from "sonner";
 
 import { type Poll } from "@/entities/poll";
+import { EditPollModal } from "@/features/poll/edit-poll/edit-poll-modal";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { toast } from "sonner";
 import { useAuth } from "@/app/providers/auth/use-auth";
 
 interface HomeUserPollsSectionProps {
@@ -20,6 +22,7 @@ export function HomeUserPollsSection({
   onCreatePoll,
 }: HomeUserPollsSectionProps) {
   const { user } = useAuth();
+  const [editingPoll, setEditingPoll] = useState<Poll | null>(null);
 
   const hasNoPolls = (polls?.length ?? 0) === 0;
 
@@ -29,9 +32,11 @@ export function HomeUserPollsSection({
         <Users className="text-muted-foreground" />
         <h2 className="text-base font-semibold text-card-foreground">Meus grupos</h2>
 
-        <Button className="ml-auto" onClick={onCreatePoll}>
-          <Plus /> Novo
-        </Button>
+        <div className="ml-auto flex gap-2">
+          <Button onClick={onCreatePoll}>
+            <Plus /> Novo
+          </Button>
+        </div>
       </div>
 
       {isPending && (
@@ -63,7 +68,21 @@ export function HomeUserPollsSection({
               key={poll.id}
               className="rounded-lg border border-border bg-background px-4 py-3"
             >
-              <p className="text-lg font-medium text-foreground">{poll.title}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-lg font-medium text-foreground">{poll.title}</p>
+
+                {poll.ownerId === user?.id && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    aria-label="Editar bolão"
+                    onClick={() => setEditingPoll(poll)}
+                  >
+                    <Pencil className="size-3.5" />
+                    Editar
+                  </Button>
+                )}
+              </div>
 
               <div className="flex items-center gap-2">
                 <p className="text-sm text-muted-foreground">
@@ -80,9 +99,8 @@ export function HomeUserPollsSection({
                   variant="ghost"
                   onClick={() => {
                     const pollCodeEl = document.getElementById(`poll-code-${poll.code}`);
-
                     if (pollCodeEl && navigator.clipboard && window.isSecureContext) {
-                      navigator.clipboard.writeText(pollCodeEl.textContent).then(() => {
+                      void navigator.clipboard.writeText(pollCodeEl.textContent ?? "").then(() => {
                         toast.success("Código copiado com sucesso!");
                       });
                     }
@@ -107,6 +125,7 @@ export function HomeUserPollsSection({
                 <div className="flex items-center gap-1">
                   {poll.participants.slice(0, 4).map((participant, index) => (
                     <figure
+                      key={participant}
                       title={participant}
                       className={`flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground z-[${index + 2}] ${index > 0 ? "-ml-1" : ""}`}
                     >
@@ -124,6 +143,13 @@ export function HomeUserPollsSection({
             </article>
           ))}
         </div>
+      )}
+
+      {editingPoll && (
+        <EditPollModal
+          poll={editingPoll}
+          onClose={() => setEditingPoll(null)}
+        />
       )}
     </section>
   );
