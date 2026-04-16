@@ -16,6 +16,19 @@ export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 type LogoutFn = () => void;
 let logoutCallback: LogoutFn | null = null;
+const AUTH_TOKEN_STORAGE_KEY = "auth_token";
+
+export function getAuthToken() {
+  return localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+}
+
+export function setAuthToken(token: string) {
+  localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+}
+
+export function clearAuthToken() {
+  localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+}
 
 export function registerLogoutCallback(fn: LogoutFn) {
   logoutCallback = fn;
@@ -48,14 +61,26 @@ const apiBaseUrl = (import.meta.env.VITE_API_URL ?? defaultApiBaseUrl).replace(/
 
 export const api = axios.create({
   baseURL: apiBaseUrl,
-  withCredentials: true,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+const initialToken = getAuthToken();
+if (initialToken) {
+  api.defaults.headers.common.Authorization = `Bearer ${initialToken}`;
+}
+
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = getAuthToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete config.headers.Authorization;
+  }
+
   if (config.params) {
     config.params = Object.fromEntries(
       Object.entries(config.params as Record<string, unknown>).filter(
@@ -87,6 +112,7 @@ api.interceptors.response.use(
       const body = error.response?.data as ApiResponse | undefined;
 
       if (status === 401) {
+        clearAuthToken();
         logoutCallback?.();
         return Promise.reject(error);
       }

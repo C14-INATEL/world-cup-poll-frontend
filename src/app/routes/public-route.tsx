@@ -8,9 +8,9 @@ function GuardFallback() {
 }
 
 export function PublicRoute() {
-  const { data: user, isPending, isError } = useCurrentUserQuery()
+  const { data: user, isLoading, isError } = useCurrentUserQuery()
 
-  if (isPending) {
+  if (isLoading) {
     return <GuardFallback />
   }
 

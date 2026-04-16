@@ -13,9 +13,9 @@ function GuardFallback() {
 }
 
 export function PrivateRoute() {
-  const { data: user, isPending, isError } = useCurrentUserQuery()
+  const { data: user, isLoading, isError } = useCurrentUserQuery()
 
-  if (isPending) {
+  if (isLoading) {
     return <GuardFallback />
   }
 
