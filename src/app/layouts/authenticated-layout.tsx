@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { HouseIcon, LogOut, Trophy } from "lucide-react";
+import { HouseIcon, LogOut, Target, Trophy } from "lucide-react";
 
 import { useAuth } from "@/app/providers/auth/use-auth";
 import { ROUTES } from "@/shared/constants/routes";
@@ -24,6 +24,11 @@ const navigationItems = [
     label: "Início",
     icon: HouseIcon,
     to: ROUTES.home,
+  },
+  {
+    label: "Palpites",
+    icon: Target,
+    to: ROUTES.guesses,
   },
 ];
 

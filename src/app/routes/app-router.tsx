@@ -7,6 +7,7 @@ import { ROUTES } from '@/shared/constants/routes'
 
 const AuthPage = lazy(() => import('@/pages/auth').then((module) => ({ default: module.AuthPage })))
 const HomePage = lazy(() => import('@/pages/home').then((module) => ({ default: module.HomePage })))
+const GuessesPage = lazy(() => import('@/pages/guesses').then((module) => ({ default: module.GuessesPage })))
 
 function PageFallback() {
   return (
@@ -26,6 +27,7 @@ export function AppRouter() {
 
         <Route element={<PrivateRoute />}>
           <Route path={ROUTES.home} element={<HomePage />} />
+          <Route path={ROUTES.guesses} element={<GuessesPage />} />
         </Route>
 
         <Route path={ROUTES.root} element={<Navigate to={ROUTES.home} replace />} />
