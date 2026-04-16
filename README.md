@@ -1,73 +1,134 @@
-# React + TypeScript + Vite
+# World Cup Poll — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacao web para criar e participar de boloes da Copa do Mundo. Desenvolvida com React, TypeScript e Vite.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tecnologias
 
-## React Compiler
+- **React 19** + **TypeScript**
+- **Vite 8** — build tool e dev server
+- **Tailwind CSS v4** — estilizacao com design tokens OKLCH
+- **React Router v7** — roteamento
+- **TanStack React Query v5** — gerenciamento de estado do servidor
+- **React Hook Form** + **Zod** — formularios e validacao
+- **Axios** — cliente HTTP
+- **Sonner** — notificacoes toast
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Pre-requisitos
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [Node.js](https://nodejs.org/) v18 ou superior
+- npm v9 ou superior
+- Backend rodando em `http://localhost:3333` (veja o repositorio `world-cup-poll-backend`)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Configuracao do ambiente
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Copie o arquivo de exemplo e ajuste as variaveis:
+
+```bash
+cp .env.example .env
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Conteudo do `.env` para desenvolvimento local:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```env
+VITE_API_URL=http://localhost:3333
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+> **Atencao:** o valor padrao do `.env.example` usa `/api` (modo producao com Nginx). Para rodar localmente, certifique-se de apontar para a URL do backend.
+
+---
+
+## Como inicializar
+
+```bash
+# 1. Instale as dependencias
+npm install
+
+# 2. Inicie o servidor de desenvolvimento
+npm run dev
+```
+
+A aplicacao estara disponivel em: **http://localhost:5173**
+
+---
+
+## Scripts disponiveis
+
+| Comando | Descricao |
+|---------|-----------|
+| `npm run dev` | Inicia o servidor de desenvolvimento com HMR |
+| `npm run build` | Gera o build de producao em `/dist` |
+| `npm run preview` | Previa do build de producao localmente |
+| `npm run lint` | Executa o ESLint no projeto |
+
+---
+
+## Estrutura do projeto
+
+```
+src/
+├── app/              # Setup da aplicacao (rotas, layouts, providers)
+│   ├── layouts/      # authenticated-layout, divided-layout
+│   ├── providers/    # AuthContext, QueryClient, AppProviders
+│   ├── routes/       # app-router, private-route, public-route
+│   └── styles/       # global.css com design tokens
+│
+├── entities/         # Modelos de dados e queries
+│   ├── game/         # Tipos e useNextGamesQuery
+│   ├── poll/         # Tipos e useUserPollsQuery
+│   └── user/         # Tipos e useCurrentUserQuery
+│
+├── features/         # Logica de funcionalidades
+│   ├── auth/         # useLoginMutation, useRegisterMutation
+│   └── poll/         # CreatePollModal, useCreatePollMutation
+│
+├── pages/            # Componentes de pagina
+│   ├── auth/         # Pagina de login e cadastro
+│   └── home/         # Dashboard principal
+│
+└── shared/           # Utilitarios e componentes compartilhados
+    ├── api/          # Instancia Axios e QueryClient
+    ├── constants/    # Endpoints e rotas
+    ├── hooks/        # useMobile
+    ├── ui/           # Button, Dialog, Input, Sidebar, Skeleton...
+    └── utils/        # cn (classname merger)
+```
+
+---
+
+## Paginas
+
+| Rota | Descricao | Acesso |
+|------|-----------|--------|
+| `/auth` | Login e cadastro de usuario | Publico |
+| `/home` | Dashboard com proximos jogos e boloes | Autenticado |
+
+---
+
+## Rodando frontend e backend juntos
+
+Para rodar o projeto completo localmente, siga a ordem abaixo:
+
+```bash
+# Terminal 1 — Banco de dados (requer Docker)
+cd world-cup-poll-backend
+docker compose up -d db
+
+# Terminal 2 — Backend
+cd world-cup-poll-backend
+npm install
+npx drizzle-kit migrate
+npm run dev
+# API disponivel em http://localhost:3333
+
+# Terminal 3 — Frontend
+cd world-cup-poll-frontend
+npm install
+npm run dev
+# App disponivel em http://localhost:5173
 ```
