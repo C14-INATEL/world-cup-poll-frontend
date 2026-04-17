@@ -11,5 +11,13 @@ export const ENDPOINTS = {
   poll: {
     create: '/poll/create',
     user: '/polls/user',
+    update: (id: string) => `/poll/${id}`,
+    delete: (id: string) => `/poll/${id}`,
+  },
+  guess: {
+    create: (pollId: string) => `/polls/${pollId}/guess/create`,
+    update: (pollId: string, guessId: string) => `/polls/${pollId}/guess/${guessId}/update`,
+    byParticipant: (participantId: string) => `/guess/participant/${participantId}`,
+    byGame: (gameId: string) => `/guess/game/${gameId}`,
   },
 } as const
