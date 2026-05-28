@@ -10,6 +10,7 @@ export const ENDPOINTS = {
   },
   poll: {
     create: '/poll/create',
+    join: '/poll/join',
     user: '/polls/user',
     update: (id: string) => `/poll/${id}`,
     delete: (id: string) => `/poll/${id}`,

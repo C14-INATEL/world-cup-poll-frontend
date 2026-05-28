@@ -23,12 +23,12 @@ import { Input } from '@/shared/ui/input'
 const guessSchema = z.object({
   pollId: z.string().min(1, 'Selecione um bolão'),
   firstTeamPoints: z
-    .number({ invalid_type_error: 'Informe um número' })
+    .number({ error: 'Informe um número' })
     .int('Deve ser inteiro')
     .min(0, 'Mínimo 0')
     .max(20, 'Máximo 20'),
   secondTeamPoints: z
-    .number({ invalid_type_error: 'Informe um número' })
+    .number({ error: 'Informe um número' })
     .int('Deve ser inteiro')
     .min(0, 'Mínimo 0')
     .max(20, 'Máximo 20'),
