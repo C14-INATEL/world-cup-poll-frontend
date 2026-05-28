@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Pencil, Plus, Users } from "lucide-react";
+import { Copy, LogIn, Pencil, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { type Poll } from "@/entities/poll";
@@ -13,6 +13,7 @@ interface HomeUserPollsSectionProps {
   isPending: boolean;
   isError: boolean;
   onCreatePoll: () => void;
+  onJoinPoll: () => void;
 }
 
 export function HomeUserPollsSection({
@@ -20,6 +21,7 @@ export function HomeUserPollsSection({
   isPending,
   isError,
   onCreatePoll,
+  onJoinPoll,
 }: HomeUserPollsSectionProps) {
   const { user } = useAuth();
   const [editingPoll, setEditingPoll] = useState<Poll | null>(null);
@@ -33,6 +35,9 @@ export function HomeUserPollsSection({
         <h2 className="text-base font-semibold text-card-foreground">Meus grupos</h2>
 
         <div className="ml-auto flex gap-2">
+          <Button variant="outline" onClick={onJoinPoll}>
+            <LogIn /> Entrar
+          </Button>
           <Button onClick={onCreatePoll}>
             <Plus /> Novo
           </Button>
@@ -55,9 +60,14 @@ export function HomeUserPollsSection({
       {!isPending && !isError && hasNoPolls && (
         <div className="rounded-lg border border-dashed border-border bg-background p-4">
           <p className="text-sm text-muted-foreground">Você ainda não participa de nenhum grupo.</p>
-          <Button className="mt-4 w-full" onClick={onCreatePoll}>
-            Criar meu primeiro grupo
-          </Button>
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <Button variant="outline" onClick={onJoinPoll}>
+              <LogIn /> Entrar em grupo
+            </Button>
+            <Button onClick={onCreatePoll}>
+              <Plus /> Criar grupo
+            </Button>
+          </div>
         </div>
       )}
 

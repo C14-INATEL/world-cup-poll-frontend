@@ -3,3 +3,5 @@ export * from "./create-poll/use-create-poll-mutation";
 export * from "./edit-poll/edit-poll-modal";
 export * from "./edit-poll/use-update-poll-mutation";
 export * from "./edit-poll/use-delete-poll-mutation";
+export * from "./join-poll/join-poll-modal";
+export * from "./join-poll/use-join-poll-mutation";

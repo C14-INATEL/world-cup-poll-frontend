@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { type Game, useNextGamesQuery } from '@/entities/game'
 import { type Guess, useParticipantGuessesQuery } from '@/entities/guess'
 import { useUserPollsQuery } from '@/entities/poll'
-import { CreatePollModal } from '@/features/poll'
+import { CreatePollModal, JoinPollModal } from '@/features/poll'
 import { GameGuessesModal } from '@/pages/guesses/ui/game-guesses-modal'
 import { GuessFormModal } from '@/pages/guesses/ui/guess-form-modal'
 import {
@@ -19,6 +19,7 @@ interface GuessFormState {
 
 export function HomePage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
   const [participantId, setParticipantId] = useState('')
   const [selectedPollId, setSelectedPollId] = useState('')
   const [guessFormState, setGuessFormState] = useState<GuessFormState | null>(null)
@@ -69,12 +70,18 @@ export function HomePage() {
           isPending={isUserPollsPending}
           isError={isUserPollsError}
           onCreatePoll={() => setIsCreateModalOpen(true)}
+          onJoinPoll={() => setIsJoinModalOpen(true)}
         />
       </div>
 
       <CreatePollModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      <JoinPollModal
+        isOpen={isJoinModalOpen}
+        onClose={() => setIsJoinModalOpen(false)}
       />
 
       {guessFormState && (

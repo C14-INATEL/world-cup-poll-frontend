@@ -20,7 +20,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (input: UserLogin) => {
       const authSession = await loginMutation.mutateAsync(input);
-      const { token: _token, ...authenticatedUser } = authSession;
+      const authenticatedUser = {
+        id: authSession.id,
+        name: authSession.name,
+        email: authSession.email,
+      };
       setAuthToken(authSession.token);
       setUser(authenticatedUser);
       queryClient.setQueryData(userQueryKeys.me, authenticatedUser);
@@ -31,7 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (input: UserRegister) => {
       const authSession = await registerMutation.mutateAsync(input);
-      const { token: _token, ...authenticatedUser } = authSession;
+      const authenticatedUser = {
+        id: authSession.id,
+        name: authSession.name,
+        email: authSession.email,
+      };
       setAuthToken(authSession.token);
       setUser(authenticatedUser);
       queryClient.setQueryData(userQueryKeys.me, authenticatedUser);
