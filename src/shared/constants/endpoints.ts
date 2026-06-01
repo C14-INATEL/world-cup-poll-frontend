@@ -5,6 +5,9 @@ export const ENDPOINTS = {
     logout: '/auth/logout',
     me: '/me',
   },
+  user: {
+    updateProfile: '/me',
+  },
   game: {
     list: '/games',
   },
@@ -20,5 +23,7 @@ export const ENDPOINTS = {
     update: (pollId: string, guessId: string) => `/polls/${pollId}/guess/${guessId}/update`,
     byParticipant: (participantId: string) => `/guess/participant/${participantId}`,
     byGame: (gameId: string) => `/guess/game/${gameId}`,
+    byPoll: (pollId: string) => `/polls/${pollId}/guesses`,
+    user: '/guess/user',
   },
 } as const
