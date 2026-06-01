@@ -32,6 +32,13 @@ export interface UserGuess {
   }
 }
 
+export interface PollGuess extends UserGuess {
+  participant: {
+    id: string
+    name: string
+  }
+}
+
 export interface UserGuessesResponse {
   items: UserGuess[]
   page: number
