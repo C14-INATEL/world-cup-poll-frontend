@@ -3,4 +3,5 @@ export const ROUTES = {
   auth: '/login',
   home: '/home',
   guesses: '/guess',
+  profile: '/profile',
 } as const
