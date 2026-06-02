@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogIn } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -49,7 +49,7 @@ export function JoinPollModal({ isOpen, onClose }: JoinPollModalProps) {
     },
   });
 
-  const code = form.watch("code");
+  const code = useWatch({ control: form.control, name: "code" }) ?? "";
   const canSubmit = code.length === POLL_CODE_LENGTH && !joinPollMutation.isPending;
 
   async function handleJoin(values: JoinPollFormValues) {
