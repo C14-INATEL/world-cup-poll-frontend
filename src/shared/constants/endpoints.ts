@@ -7,6 +7,7 @@ export const ENDPOINTS = {
   },
   user: {
     updateProfile: '/me',
+    search: '/users/search',
   },
   game: {
     list: '/games',
@@ -17,6 +18,12 @@ export const ENDPOINTS = {
     user: '/polls/user',
     update: (id: string) => `/poll/${id}`,
     delete: (id: string) => `/poll/${id}`,
+  },
+  invite: {
+    create: '/poll/invite',
+  },
+  ranking: {
+    byPoll: (pollId: string) => `/polls/${pollId}/ranking`,
   },
   guess: {
     create: (pollId: string) => `/polls/${pollId}/guess/create`,

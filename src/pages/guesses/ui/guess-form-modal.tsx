@@ -48,6 +48,7 @@ interface GuessFormModalProps {
   guess?: Guess
   pollId: string
   polls: Poll[]
+  hidePollSelect?: boolean
   onChangePoll: (pollId: string) => void
   onClose: () => void
   onSuccess: (participantId: string) => void
@@ -58,6 +59,7 @@ export function GuessFormModal({
   guess,
   pollId,
   polls,
+  hidePollSelect = false,
   onChangePoll,
   onClose,
   onSuccess,
@@ -182,28 +184,30 @@ export function GuessFormModal({
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Seletor de bolão */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-foreground">Bolão</label>
-            <select
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-              value={pollId}
-              disabled={isEditing || isPending}
-              onChange={(e) => {
-                onChangePoll(e.target.value)
-                setValue('pollId', e.target.value)
-              }}
-            >
-              <option value="">Selecione um bolão...</option>
-              {polls.map((poll) => (
-                <option key={poll.id} value={poll.id}>
-                  {poll.title}
-                </option>
-              ))}
-            </select>
-            {errors.pollId && (
-              <p className="text-xs text-destructive">{errors.pollId.message}</p>
-            )}
-          </div>
+          {!hidePollSelect && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-foreground">Bolão</label>
+              <select
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                value={pollId}
+                disabled={isEditing || isPending}
+                onChange={(e) => {
+                  onChangePoll(e.target.value)
+                  setValue('pollId', e.target.value)
+                }}
+              >
+                <option value="">Selecione um bolão...</option>
+                {polls.map((poll) => (
+                  <option key={poll.id} value={poll.id}>
+                    {poll.title}
+                  </option>
+                ))}
+              </select>
+              {errors.pollId && (
+                <p className="text-xs text-destructive">{errors.pollId.message}</p>
+              )}
+            </div>
+          )}
 
           {/* Placar */}
           <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3">

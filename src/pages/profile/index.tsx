@@ -359,8 +359,6 @@ function UserPollsSection({
   isError: boolean;
   onOpenGuesses: (poll: Poll) => void;
 }) {
-  const totalParticipants = polls.reduce((total, poll) => total + poll.participants.length, 0);
-
   return (
     <section className="rounded-lg border border-border bg-card p-4 md:p-5">
       <SectionTitle

@@ -18,6 +18,10 @@ export interface UserGuess {
     id: string
     title: string
   }
+  participant?: {
+    id: string
+    name: string
+  }
   game: {
     id: string
     date: string
@@ -25,6 +29,8 @@ export interface UserGuess {
     secondTeamName: string | null
     firstTeamCountryCode: string
     secondTeamCountryCode: string
+    firstTeamGoals?: number | null
+    secondTeamGoals?: number | null
   }
   result: {
     status: GuessResultStatus
