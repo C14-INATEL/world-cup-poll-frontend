@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/constants/routes'
 const AuthPage = lazy(() => import('@/pages/auth').then((module) => ({ default: module.AuthPage })))
 const HomePage = lazy(() => import('@/pages/home').then((module) => ({ default: module.HomePage })))
 const GuessesPage = lazy(() => import('@/pages/guesses').then((module) => ({ default: module.GuessesPage })))
+const GroupPage = lazy(() => import('@/pages/group').then((module) => ({ default: module.GroupPage })))
 const ProfilePage = lazy(() => import('@/pages/profile').then((module) => ({ default: module.ProfilePage })))
 
 function PageFallback() {
@@ -29,6 +30,7 @@ export function AppRouter() {
         <Route element={<PrivateRoute />}>
           <Route path={ROUTES.home} element={<HomePage />} />
           <Route path={ROUTES.guesses} element={<GuessesPage />} />
+          <Route path={ROUTES.group} element={<GroupPage />} />
           <Route path={ROUTES.profile} element={<ProfilePage />} />
         </Route>
 

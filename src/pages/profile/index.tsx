@@ -359,8 +359,6 @@ function UserPollsSection({
   isError: boolean;
   onOpenGuesses: (poll: Poll) => void;
 }) {
-  const totalParticipants = polls.reduce((total, poll) => total + poll.participants.length, 0);
-
   return (
     <section className="rounded-lg border border-border bg-card p-4 md:p-5">
       <SectionTitle
@@ -462,10 +460,23 @@ export function ProfilePage() {
       return;
     }
 
-    setHasMoreGuesses(userGuessesQuery.data.hasMore);
-    setGuesses((current) =>
-      page === 1 ? userGuessesQuery.data.items : [...current, ...userGuessesQuery.data.items],
-    );
+    const data = userGuessesQuery.data;
+    let shouldUpdate = true;
+
+    queueMicrotask(() => {
+      if (!shouldUpdate) {
+        return;
+      }
+
+      setHasMoreGuesses(data.hasMore);
+      setGuesses((current) =>
+        page === 1 ? data.items : [...current, ...data.items],
+      );
+    });
+
+    return () => {
+      shouldUpdate = false;
+    };
   }, [page, userGuessesQuery.data]);
 
   const isInitialGuessesLoading = userGuessesQuery.isPending && guesses.length === 0;
