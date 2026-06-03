@@ -1,14 +1,13 @@
 import { useState } from 'react'
 
-import { type Game, useNextGamesQuery } from '@/entities/game'
-import { type Guess, useParticipantGuessesQuery } from '@/entities/guess'
+import { type Game } from '@/entities/game'
+import { type Guess } from '@/entities/guess'
 import { useUserPollsQuery } from '@/entities/poll'
 import { CreatePollModal, JoinPollModal } from '@/features/poll'
 import { GameGuessesModal } from '@/pages/guesses/ui/game-guesses-modal'
 import { GuessFormModal } from '@/pages/guesses/ui/guess-form-modal'
 import {
   HomeHeaderSection,
-  HomeNextGamesSection,
   HomeUserPollsSection,
 } from '@/pages/home/ui'
 
@@ -26,18 +25,11 @@ export function HomePage() {
   const [gameGuessesGame, setGameGuessesGame] = useState<Game | null>(null)
 
   const {
-    data: nextGames,
-    isPending: isNextGamesPending,
-    isError: isNextGamesError,
-  } = useNextGamesQuery({ limit: 5 })
-
-  const {
     data: userPolls,
     isPending: isUserPollsPending,
     isError: isUserPollsError,
   } = useUserPollsQuery()
 
-  const { data: myGuesses = [] } = useParticipantGuessesQuery(participantId)
 
   const handleGuessSuccess = (newParticipantId: string) => {
     if (!participantId) {
@@ -45,25 +37,11 @@ export function HomePage() {
     }
   }
 
-  const handlePalpitar = (game: Game) => {
-    const myGuess = myGuesses.find((g) => g.gameId === game.id)
-    setGuessFormState({ game, guess: myGuess })
-  }
-
   return (
     <div className="flex w-full flex-col gap-6">
       <HomeHeaderSection />
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_1fr]">
-        <HomeNextGamesSection
-          games={nextGames}
-          isPending={isNextGamesPending}
-          isError={isNextGamesError}
-          myGuesses={myGuesses}
-          polls={userPolls ?? []}
-          onPalpitar={handlePalpitar}
-          onVerPalpites={setGameGuessesGame}
-        />
+      <div className="grid grid-cols-1 gap-6">
 
         <HomeUserPollsSection
           polls={userPolls}

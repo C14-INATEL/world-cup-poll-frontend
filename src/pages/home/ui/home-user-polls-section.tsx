@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Copy, LogIn, Pencil, Plus, Users } from "lucide-react";
+import { Copy, ExternalLink, LogIn, Pencil, Plus, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { type Poll } from "@/entities/poll";
 import { EditPollModal } from "@/features/poll/edit-poll/edit-poll-modal";
+import { ROUTES } from "@/shared/constants/routes";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useAuth } from "@/app/providers/auth/use-auth";
@@ -81,17 +83,28 @@ export function HomeUserPollsSection({
               <div className="flex items-start justify-between gap-2">
                 <p className="text-lg font-medium text-foreground">{poll.title}</p>
 
-                {poll.ownerId === user?.id && (
+                <div>
+
+                  {poll.ownerId === user?.id && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      aria-label="Editar bolão"
+                      onClick={() => setEditingPoll(poll)}
+                    >
+                      <Pencil className="size-3.5" />
+                      Editar
+                    </Button>
+                  )}
                   <Button
                     size="sm"
-                    variant="ghost"
-                    aria-label="Editar bolão"
-                    onClick={() => setEditingPoll(poll)}
+                    variant="outline"
+                    render={<Link to={ROUTES.groupDetails(poll.code)} />}
                   >
-                    <Pencil className="size-3.5" />
-                    Editar
+                    <ExternalLink className="size-3.5" />
+                    Abrir
                   </Button>
-                )}
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -137,7 +150,7 @@ export function HomeUserPollsSection({
                     <figure
                       key={participant}
                       title={participant}
-                      className={`flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground z-[${index + 2}] ${index > 0 ? "-ml-1" : ""}`}
+                      className={`flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground -ml-2 border border-white ${index > 0 ? "-ml-1" : ""}`}
                     >
                       <span className="text-xs font-semibold">
                         {participant.charAt(0).toUpperCase()}

@@ -30,6 +30,9 @@ export function useUpdateGuessMutation() {
       await queryClient.invalidateQueries({
         queryKey: guessQueryKeys.byGame(data.gameId),
       })
+      await queryClient.invalidateQueries({
+        queryKey: guessQueryKeys.all,
+      })
     },
   })
 }

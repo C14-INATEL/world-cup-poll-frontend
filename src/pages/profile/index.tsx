@@ -460,11 +460,23 @@ export function ProfilePage() {
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHasMoreGuesses(userGuessesQuery.data.hasMore);
-    setGuesses((current) =>
-      page === 1 ? userGuessesQuery.data.items : [...current, ...userGuessesQuery.data.items],
-    );
+    const data = userGuessesQuery.data;
+    let shouldUpdate = true;
+
+    queueMicrotask(() => {
+      if (!shouldUpdate) {
+        return;
+      }
+
+      setHasMoreGuesses(data.hasMore);
+      setGuesses((current) =>
+        page === 1 ? data.items : [...current, ...data.items],
+      );
+    });
+
+    return () => {
+      shouldUpdate = false;
+    };
   }, [page, userGuessesQuery.data]);
 
   const isInitialGuessesLoading = userGuessesQuery.isPending && guesses.length === 0;

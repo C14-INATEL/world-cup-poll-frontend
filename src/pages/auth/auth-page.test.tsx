@@ -25,6 +25,7 @@ describe("AuthPage", () => {
 
     server.use(
       http.post(apiBaseUrl + ENDPOINTS.auth.login, () => HttpResponse.json(authenticatedSession)),
+      http.get(apiBaseUrl + ENDPOINTS.auth.me, () => HttpResponse.json(authenticatedSession)),
     );
 
     renderWithProviders(
@@ -51,6 +52,7 @@ describe("AuthPage", () => {
       http.post(apiBaseUrl + ENDPOINTS.auth.register, () =>
         HttpResponse.json(authenticatedSession),
       ),
+      http.get(apiBaseUrl + ENDPOINTS.auth.me, () => HttpResponse.json(authenticatedSession)),
     );
 
     renderWithProviders(
