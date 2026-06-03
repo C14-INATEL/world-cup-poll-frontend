@@ -4,4 +4,6 @@ export const ROUTES = {
   home: '/home',
   guesses: '/guess',
   profile: '/profile',
+  group: '/groups/:pollCode',
+  groupDetails: (pollCode: string) => `/groups/${pollCode}`,
 } as const

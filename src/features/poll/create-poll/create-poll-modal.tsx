@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCw } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { useCreatePollMutation } from "@/features/poll/create-poll/use-create-poll-mutation";
@@ -58,9 +58,11 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
     },
   });
 
+  const title = useWatch({ control: form.control, name: "title" }) ?? "";
+  const code = useWatch({ control: form.control, name: "code" }) ?? "";
   const canSubmit =
-    form.watch("title").trim().length > 0 &&
-    form.watch("code").length === POOL_CODE_LENGTH &&
+    title.trim().length > 0 &&
+    code.length === POOL_CODE_LENGTH &&
     !createPollMutation.isPending;
 
   async function handleCreate(values: CreatePollFormValues) {
@@ -134,7 +136,7 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
               <Input
                 id="poll-code"
                 placeholder="ABC123DEF4"
-                value={form.watch("code")}
+                value={code}
                 onChange={(event) => {
                   form.setValue("code", sanitizePoolCode(event.target.value), {
                     shouldDirty: true,
