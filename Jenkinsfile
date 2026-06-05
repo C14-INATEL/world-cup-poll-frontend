@@ -1,9 +1,7 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:20'
-            reuseNode true
-        }
+    agent any
+    tools {
+        nodejs 'node22.16'
     }
 
     options {
@@ -49,9 +47,10 @@ pipeline {
                     string(credentialsId: 'vercel-org-id', variable: 'VERCEL_ORG_ID'),
                     string(credentialsId: 'vercel-project-id', variable: 'VERCEL_PROJECT_ID'),
                 ]) {
-                    sh 'vercel pull --yes --environment=production --token="$VERCEL_TOKEN"'
-                    sh 'vercel build --prod --token="$VERCEL_TOKEN"'
-                    sh 'vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"'
+                    sh 'npm install --save-dev vercel'
+                    sh 'npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"'
+                    sh 'npx vercel build --prod --token="$VERCEL_TOKEN"'
+                    sh 'npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"'
                 }
             }
         }
