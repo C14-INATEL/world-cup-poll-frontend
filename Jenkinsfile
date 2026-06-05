@@ -62,7 +62,7 @@ pipeline {
             echo 'Pipeline failed!'
         }
         always {
-            cleanWs()
+            cleanWs(notFailBuild: true, deleteDirs: true)
         }
     }
 }
