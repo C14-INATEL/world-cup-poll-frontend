@@ -39,7 +39,9 @@ pipeline {
 
         stage('Deploy to Vercel') {
             when {
-                branch 'main'
+                expression {
+                    env.GIT_BRANCH == 'origin/main'
+                }
             }
             steps {
                 withCredentials([
