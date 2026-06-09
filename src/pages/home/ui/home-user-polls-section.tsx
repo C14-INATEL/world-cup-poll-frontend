@@ -81,7 +81,12 @@ export function HomeUserPollsSection({
               className="rounded-lg border border-border bg-background px-4 py-3"
             >
               <div className="flex items-start justify-between gap-2">
-                <p className="text-lg font-medium text-foreground">{poll.title}</p>
+                <Link
+                  to={ROUTES.groupDetails(poll.code)}
+                  className="text-lg font-medium text-foreground hover:underline"
+                >
+                  {poll.title}
+                </Link>
 
                 <div>
 

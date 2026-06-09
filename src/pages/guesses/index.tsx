@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Pencil, Target } from 'lucide-react'
 
-import { type Game, useNextGamesQuery } from '@/entities/game'
-import { type Guess, useParticipantGuessesQuery } from '@/entities/guess'
+import { type Game } from '@/entities/game'
+import { type Guess, type UserGuess, useUserGuessesQuery } from '@/entities/guess'
 import { useUserPollsQuery } from '@/entities/poll'
 import { Button } from '@/shared/ui/button'
 import { Skeleton } from '@/shared/ui/skeleton'
@@ -18,25 +18,33 @@ function formatGameDate(date: string) {
 interface GuessFormState {
   game: Game
   guess: Guess
+  pollId: string
 }
 
 export function GuessesPage() {
-  const [participantId, setParticipantId] = useState('')
-  const [selectedPollId, setSelectedPollId] = useState('')
   const [guessFormState, setGuessFormState] = useState<GuessFormState | null>(null)
+  const [selectedPollId, setSelectedPollId] = useState('')
 
-  const gamesQuery = useNextGamesQuery({ limit: 20 })
+  const guessesQuery = useUserGuessesQuery({ page: 1, limit: 50 })
   const pollsQuery = useUserPollsQuery()
-  const myGuessesQuery = useParticipantGuessesQuery(participantId)
 
-  const games = gamesQuery.data ?? []
+  const guesses = guessesQuery.data?.items ?? []
   const polls = pollsQuery.data ?? []
-  const myGuesses = myGuessesQuery.data ?? []
 
-  const handleGuessSuccess = (newParticipantId: string) => {
-    if (!participantId) {
-      setParticipantId(newParticipantId)
-    }
+  const openEdit = (userGuess: UserGuess) => {
+    setSelectedPollId(userGuess.poll.id)
+    setGuessFormState({
+      game: userGuess.game as unknown as Game,
+      guess: {
+        id: userGuess.id,
+        firstTeamPoints: userGuess.firstTeamPoints,
+        secondTeamPoints: userGuess.secondTeamPoints,
+        createdAt: userGuess.createdAt,
+        gameId: userGuess.game.id,
+        participantId: userGuess.participant?.id ?? '',
+      },
+      pollId: userGuess.poll.id,
+    })
   }
 
   return (
@@ -59,7 +67,21 @@ export function GuessesPage() {
           <h2 className="text-base font-semibold text-card-foreground">Palpites registrados</h2>
         </div>
 
-        {!participantId && (
+        {guessesQuery.isPending && (
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+          </div>
+        )}
+
+        {guessesQuery.isError && (
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            Não foi possível carregar seus palpites.
+          </p>
+        )}
+
+        {!guessesQuery.isPending && !guessesQuery.isError && guesses.length === 0 && (
           <div className="rounded-lg border border-dashed border-border bg-background p-4 text-center">
             <p className="text-sm text-muted-foreground">
               Você ainda não fez nenhum palpite. Acesse a página{' '}
@@ -68,68 +90,43 @@ export function GuessesPage() {
           </div>
         )}
 
-        {participantId && myGuessesQuery.isPending && (
+        {!guessesQuery.isPending && !guessesQuery.isError && guesses.length > 0 && (
           <div className="flex flex-col gap-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
-        )}
-
-        {participantId && myGuessesQuery.isError && (
-          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            Não foi possível carregar seus palpites.
-          </p>
-        )}
-
-        {participantId && !myGuessesQuery.isPending && !myGuessesQuery.isError && myGuesses.length === 0 && (
-          <p className="text-sm text-muted-foreground">Nenhum palpite encontrado.</p>
-        )}
-
-        {participantId && !myGuessesQuery.isPending && !myGuessesQuery.isError && myGuesses.length > 0 && (
-          <div className="flex flex-col gap-2">
-            {myGuesses.map((guess) => {
-              const game = games.find((g) => g.id === guess.gameId)
-              return (
-                <div
-                  key={guess.id}
-                  className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3"
-                >
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <p className="truncate text-sm font-medium text-foreground">
-                      {game
-                        ? `${game.firstTeamName ?? game.firstTeamCountryCode} vs ${game.secondTeamName ?? game.secondTeamCountryCode}`
-                        : 'Jogo não encontrado'}
-                    </p>
-                    {game && (
-                      <p className="text-xs text-muted-foreground">{formatGameDate(game.date)}</p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 font-semibold">
-                      <span className="flex size-8 items-center justify-center rounded border border-primary bg-primary/10 text-sm text-primary">
-                        {guess.firstTeamPoints}
-                      </span>
-                      <span className="text-xs text-muted-foreground">×</span>
-                      <span className="flex size-8 items-center justify-center rounded border border-primary bg-primary/10 text-sm text-primary">
-                        {guess.secondTeamPoints}
-                      </span>
-                    </div>
-
-                    {game && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setGuessFormState({ game, guess })}
-                      >
-                        <Pencil className="size-3.5" />
-                        Editar
-                      </Button>
-                    )}
-                  </div>
+            {guesses.map((guess) => (
+              <div
+                key={guess.id}
+                className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3"
+              >
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {`${guess.game.firstTeamName ?? guess.game.firstTeamCountryCode} vs ${guess.game.secondTeamName ?? guess.game.secondTeamCountryCode}`}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{formatGameDate(guess.game.date)}</p>
+                  <p className="text-xs font-medium text-primary">{guess.poll.title}</p>
                 </div>
-              )
-            })}
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 font-semibold">
+                    <span className="flex size-8 items-center justify-center rounded border border-primary bg-primary/10 text-sm text-primary">
+                      {guess.firstTeamPoints}
+                    </span>
+                    <span className="text-xs text-muted-foreground">×</span>
+                    <span className="flex size-8 items-center justify-center rounded border border-primary bg-primary/10 text-sm text-primary">
+                      {guess.secondTeamPoints}
+                    </span>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openEdit(guess)}
+                  >
+                    <Pencil className="size-3.5" />
+                    Editar
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>
@@ -142,7 +139,7 @@ export function GuessesPage() {
           polls={polls}
           onChangePoll={setSelectedPollId}
           onClose={() => setGuessFormState(null)}
-          onSuccess={handleGuessSuccess}
+          onSuccess={() => {}}
         />
       )}
     </div>
