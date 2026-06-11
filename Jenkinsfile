@@ -37,9 +37,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            when {
-                expression { env.GIT_BRANCH == 'origin/main' }
-            }
             steps {
                 sh 'docker build --no-cache -t ${IMAGE_NAME}:latest .'
                 sh 'docker rm -f ${CONTAINER_NAME} || true'
