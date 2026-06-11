@@ -4,12 +4,11 @@ pipeline {
         nodejs 'node22.16'
     }
 
-    options {
-        timeout(time: 20, unit: 'MINUTES')
-    }
-
     environment {
-        CI = 'true'
+        CI             = 'true'
+        IMAGE_NAME     = 'world-cup-poll-frontend'
+        CONTAINER_NAME = 'world-cup-poll-frontend'
+        HOST_PORT      = '3000'
     }
 
     stages {
@@ -37,32 +36,30 @@ pipeline {
             }
         }
 
-        stage('Deploy to Vercel') {
+        stage('Deploy') {
             when {
-                expression {
-                    env.GIT_BRANCH == 'origin/main'
-                }
+                expression { env.GIT_BRANCH == 'origin/main' }
             }
             steps {
-                withCredentials([
-                    string(credentialsId: 'vercel-token', variable: 'VERCEL_TOKEN'),
-                    string(credentialsId: 'vercel-org-id', variable: 'VERCEL_ORG_ID'),
-                    string(credentialsId: 'vercel-project-id', variable: 'VERCEL_PROJECT_ID'),
-                ]) {
-                    sh 'npm install --save-dev vercel'
-                    sh 'npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"'
-                    sh 'npx vercel build --prod --token="$VERCEL_TOKEN"'
-                    sh 'npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"'
-                }
+                sh 'docker build --no-cache -t ${IMAGE_NAME}:latest .'
+                sh 'docker rm -f ${CONTAINER_NAME} || true'
+                sh '''
+                    docker run -d \
+                        --name ${CONTAINER_NAME} \
+                        --restart unless-stopped \
+                        --network world-cup-poll-network \
+                        ${IMAGE_NAME}:latest
+                '''
             }
         }
     }
 
     post {
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline falhou!'
         }
         always {
+            sh 'docker image prune -f || true'
             cleanWs(notFailBuild: true, deleteDirs: true)
         }
     }
