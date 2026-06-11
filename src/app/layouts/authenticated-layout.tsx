@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { CircleUserRound, HouseIcon, LogOut, Target, Trophy } from "lucide-react";
 
 import { useAuth } from "@/app/providers/auth/use-auth";
@@ -88,15 +88,20 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
           <SidebarMenu>
             <SidebarMenuItem>
               <div className="flex items-center gap-2 rounded-md border border-sidebar-border p-2 group-data-[collapsible=icon]:hidden">
-                <div className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
-                  <span className="text-xs font-semibold">{userInitials}</span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{user?.name ?? "Usuario"}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {user?.email ?? "Sem e-mail"}
-                  </p>
-                </div>
+                <Link
+                  to={ROUTES.profile}
+                  className="flex min-w-0 flex-1 items-center gap-2 hover:opacity-80 transition-opacity"
+                >
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+                    <span className="text-xs font-semibold">{userInitials}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{user?.name ?? "Usuario"}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {user?.email ?? "Sem e-mail"}
+                    </p>
+                  </div>
+                </Link>
                 <Button
                   aria-label="Sair da conta"
                   disabled={isAuthLoading}
@@ -112,9 +117,13 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
               </div>
 
               <div className="hidden flex-col items-center gap-2 justify-between group-data-[collapsible=icon]:flex">
-                <div className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+                <Link
+                  to={ROUTES.profile}
+                  aria-label="Ver perfil"
+                  className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground hover:opacity-80 transition-opacity"
+                >
                   <span className="text-xs font-semibold">{userInitials}</span>
-                </div>
+                </Link>
 
                 <Button
                   aria-label="Sair da conta"
