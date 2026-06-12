@@ -21,7 +21,7 @@ export function GroupHeaderSection({
 }: GroupHeaderSectionProps) {
   return (
     <header className="rounded-lg border border-border bg-card p-4 md:p-5">
-      <Button variant="ghost" size="sm" render={<Link to={ROUTES.home} />}>
+      <Button nativeButton={false} variant="ghost" size="sm" render={<Link to={ROUTES.home} />}>
         <ArrowLeft className="size-3.5" />
         Voltar
       </Button>
