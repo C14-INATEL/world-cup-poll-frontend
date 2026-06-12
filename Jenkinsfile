@@ -187,7 +187,7 @@ Check the Jenkins console output and test reports for details.
             sh 'docker image prune -f --filter "dangling=true" || true'
         }
         cleanup {
-            cleanWs(notFailBuild: true, deleteDirs: true, excludePatterns: [[pattern: '.npm-cache/**']])
+            cleanWs(notFailBuild: true, deleteDirs: true, patterns: [[pattern: '.npm-cache/**', type: 'EXCLUDE']])
         }
     }
 }
