@@ -39,7 +39,11 @@ pipeline {
 
         stage('Run tests') {
             steps {
-                sh 'npm run test:ci'
+                sh '''
+                    set -euo pipefail
+                    mkdir -p coverage
+                    npm run test:ci
+                '''
             }
             post {
                 always {
@@ -77,7 +81,7 @@ pipeline {
             echo 'Pipeline falhou!'
             script {
                 if (env.NOTIFICATION_EMAILS?.trim()) {
-                    def testSummary = 'Test summary unavailable: coverage/junit.xml was not generated.'
+                    def testSummary = 'Test summary unavailable: coverage/junit.xml was not found. Tests may not have run, or Vitest may have failed before writing the JUnit report.'
 
                     if (fileExists('coverage/junit.xml')) {
                         def junitXml = readFile('coverage/junit.xml')
@@ -136,6 +140,8 @@ Check the Jenkins console output and test reports for details.
         }
         always {
             sh 'docker image prune -f || true'
+        }
+        cleanup {
             cleanWs(notFailBuild: true, deleteDirs: true)
         }
     }
