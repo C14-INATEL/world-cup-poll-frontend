@@ -1,5 +1,6 @@
 import type { Game } from '@/entities/game/types'
 import type { Guess, UserGuess } from '@/entities/guess/types'
+import type { Invite } from '@/entities/invite/types'
 import type { Poll } from '@/entities/poll/types'
 import type { User } from '@/entities/user/types'
 
@@ -17,6 +18,19 @@ export const mockPoll: Poll = {
   ownerId: 'user-1',
   ownerName: 'Ana Clara',
   participants: ['user-1'],
+}
+
+export const mockInvite: Invite = {
+  id: 'invite-1',
+  pollId: mockPoll.id,
+  invitedUserId: mockUser.id,
+  invitedBy: 'user-2',
+  status: 'pending',
+  expiresAt: '2027-01-01T00:00:00.000Z',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  pollTitle: mockPoll.title,
+  pollCode: mockPoll.code,
+  invitedByName: 'Bruno Lima',
 }
 
 export const mockGame: Game = {

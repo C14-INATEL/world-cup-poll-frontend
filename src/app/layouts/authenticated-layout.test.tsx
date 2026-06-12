@@ -1,0 +1,53 @@
+import { describe, expect, it, beforeEach, vi } from 'vitest'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+
+import { AuthenticatedLayout } from '@/app/layouts/authenticated-layout'
+import { apiBaseUrl } from '@/shared/api/api'
+import { ENDPOINTS } from '@/shared/constants/endpoints'
+import { server } from '@/test/mocks/server'
+import { renderWithProviders } from '@/test/setup/render-with-providers'
+import { mockInvite, mockPoll, mockUser } from '@/test/fixtures'
+
+describe('AuthenticatedLayout', () => {
+  beforeEach(() => {
+    localStorage.setItem('auth_token', 'test-token')
+  })
+
+  it('permite aceitar convite pelo painel de notificacoes', async () => {
+    const user = userEvent.setup()
+    const capturedBody = vi.fn()
+
+    server.use(
+      http.get(apiBaseUrl + ENDPOINTS.auth.me, () => HttpResponse.json(mockUser)),
+      http.get(apiBaseUrl + ENDPOINTS.invite.user, () => HttpResponse.json([mockInvite])),
+      http.patch(apiBaseUrl + ENDPOINTS.invite.update(mockInvite.id), async ({ request }) => {
+        capturedBody(await request.json())
+        return HttpResponse.json({ ...mockInvite, status: 'accepted' })
+      }),
+      http.get(apiBaseUrl + ENDPOINTS.poll.user, () => HttpResponse.json([mockPoll])),
+    )
+
+    renderWithProviders(
+      <AuthenticatedLayout>
+        <div>Conteudo protegido</div>
+      </AuthenticatedLayout>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /notificacoes: 1 convite pendente/i }))
+        .toBeInTheDocument()
+    })
+
+    await user.click(screen.getByRole('button', { name: /notificacoes/i }))
+
+    expect(await screen.findByText(mockPoll.title)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /aceitar/i }))
+
+    await waitFor(() => {
+      expect(capturedBody).toHaveBeenCalledWith({ status: 'accepted' })
+    })
+  })
+})
