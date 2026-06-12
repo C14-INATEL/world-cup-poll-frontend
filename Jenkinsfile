@@ -1,7 +1,13 @@
 pipeline {
     agent any
+
     tools {
         nodejs 'node22.16'
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
     }
 
     environment {
@@ -10,7 +16,7 @@ pipeline {
         CONTAINER_NAME = 'world-cup-poll-frontend'
         HOST_PORT      = '3000'
         NOTIFICATION_EMAILS = 'viniciusgsimoni@gmail.com, joaovitorlucena000@gmail.com' 
-        }
+    }
 
     stages {
         stage('Checkout') {
