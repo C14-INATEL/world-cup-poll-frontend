@@ -55,12 +55,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh '''
+                sh """
                     docker build \
-                        --no-cache -t \
-                        --build-arg VITE_API_URL=${VITE_API_URL} \ 
-                        ${IMAGE_NAME}:latest .
-                '''
+                    --build-arg VITE_API_URL=\${VITE_API_URL} \
+                    -t world-cup-poll-frontend:latest .
+                """
                 sh 'docker rm -f ${CONTAINER_NAME} || true'
                 sh '''
                     docker run -d \
