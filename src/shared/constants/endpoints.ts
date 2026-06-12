@@ -21,6 +21,8 @@ export const ENDPOINTS = {
   },
   invite: {
     create: '/poll/invite',
+    user: '/me/invites',
+    update: (id: string) => `/invite/${id}`,
   },
   ranking: {
     byPoll: (pollId: string) => `/polls/${pollId}/ranking`,
