@@ -82,6 +82,19 @@ pipeline {
             script {
                 if (env.NOTIFICATION_EMAILS?.trim()) {
                     def testSummary = 'Test summary unavailable: coverage/junit.xml was not found. Tests may not have run, or Vitest may have failed before writing the JUnit report.'
+                    def failedTestDetails = []
+                    def decodeXml = { value ->
+                        value
+                            .replace('&quot;', '"')
+                            .replace('&apos;', "'")
+                            .replace('&lt;', '<')
+                            .replace('&gt;', '>')
+                            .replace('&amp;', '&')
+                    }
+                    def attrValue = { attrs, attrName ->
+                        def attrMatcher = attrs =~ /${attrName}="([^"]*)"/
+                        attrMatcher.find() ? decodeXml(attrMatcher.group(1)) : ''
+                    }
 
                     if (fileExists('coverage/junit.xml')) {
                         def junitXml = readFile('coverage/junit.xml')
@@ -108,12 +121,37 @@ pipeline {
 
                             def passedTests = Math.max(totalTests - failedTests - errorTests - skippedTests, 0)
 
+                            if (failedTests > 0 || errorTests > 0) {
+                                def failedCaseMatcher = junitXml =~ /(?s)<testcase\b([^>]*)>.*?<(failure|error)\b[^>]*>(.*?)<\/(failure|error)>.*?<\/testcase>/
+
+                                while (failedCaseMatcher.find()) {
+                                    def attrs = failedCaseMatcher.group(1)
+                                    def failureType = failedCaseMatcher.group(2)
+                                    def className = attrValue(attrs, 'classname')
+                                    def testName = attrValue(attrs, 'name')
+                                    def message = decodeXml(failedCaseMatcher.group(3).replaceAll(/(?s)<[^>]+>/, '').trim())
+
+                                    if (message.length() > 500) {
+                                        message = message.take(500) + '...'
+                                    }
+
+                                    failedTestDetails << "- ${className} > ${testName} [${failureType}]\n  ${message}"
+                                }
+                            }
+
                             testSummary = """Test summary:
 Total: ${totalTests}
 Passed: ${passedTests}
 Failed: ${failedTests}
 Errors: ${errorTests}
 Skipped: ${skippedTests}"""
+
+                            if (failedTestDetails) {
+                                testSummary = """${testSummary}
+
+Failed test details:
+${failedTestDetails.join('\n')}"""
+                            }
                         }
                     }
 

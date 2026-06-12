@@ -102,6 +102,7 @@ export function HomeUserPollsSection({
                     </Button>
                   )}
                   <Button
+                    nativeButton={false}
                     size="sm"
                     variant="outline"
                     render={<Link to={ROUTES.groupDetails(poll.code)} />}
