@@ -49,7 +49,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker build --no-cache -t ${IMAGE_NAME}:latest .'
+                sh '''
+                    docker build \
+                    --no-cache -t \
+                    --build-arg VITE_API_URL=${VITE_API_URL} \ 
+                    ${IMAGE_NAME}:latest .
+                '''
                 sh 'docker rm -f ${CONTAINER_NAME} || true'
                 sh '''
                     docker run -d \
