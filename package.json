@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile.junit=./coverage/junit.xml",
+    "test:ci": "vitest run --no-color --reporter=default --reporter=junit --outputFile.junit=./coverage/junit.xml",
     "preview": "vite preview"
   },
   "dependencies": {
