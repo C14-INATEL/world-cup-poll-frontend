@@ -9,6 +9,7 @@ import { ENDPOINTS } from '@/shared/constants/endpoints'
 import { server } from '@/test/mocks/server'
 import { renderWithProviders } from '@/test/setup/render-with-providers'
 import { mockInvite, mockPoll, mockUser } from '@/test/fixtures'
+import type { InviteStatus } from '@/entities/invite/types'
 
 describe('AuthenticatedLayout', () => {
   beforeEach(() => {
@@ -18,12 +19,16 @@ describe('AuthenticatedLayout', () => {
   it('permite aceitar convite pelo painel de notificacoes', async () => {
     const user = userEvent.setup()
     const capturedBody = vi.fn()
+    let inviteStatus: InviteStatus = 'pending'
 
     server.use(
       http.get(apiBaseUrl + ENDPOINTS.auth.me, () => HttpResponse.json(mockUser)),
-      http.get(apiBaseUrl + ENDPOINTS.invite.user, () => HttpResponse.json([mockInvite])),
+      http.get(apiBaseUrl + ENDPOINTS.invite.user, () =>
+        HttpResponse.json([{ ...mockInvite, status: inviteStatus }]),
+      ),
       http.patch(apiBaseUrl + ENDPOINTS.invite.update(mockInvite.id), async ({ request }) => {
         capturedBody(await request.json())
+        inviteStatus = 'accepted'
         return HttpResponse.json({ ...mockInvite, status: 'accepted' })
       }),
       http.get(apiBaseUrl + ENDPOINTS.poll.user, () => HttpResponse.json([mockPoll])),
