@@ -15,7 +15,8 @@ pipeline {
         IMAGE_NAME     = 'world-cup-poll-frontend'
         CONTAINER_NAME = 'world-cup-poll-frontend'
         HOST_PORT      = '3000'
-        NOTIFICATION_EMAILS = 'viniciusgsimoni@gmail.com, joaovitorlucena000@gmail.com' 
+        NOTIFICATION_EMAILS = 'viniciusgsimoni@gmail.com, joaovitorlucena000@gmail.com'
+        NPM_CACHE = '/var/jenkins_home/.npm-cache'
     }
 
     stages {
@@ -27,32 +28,36 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                sh 'npm ci --prefer-offline --cache .npm-cache'
+                sh 'npm ci --prefer-offline --cache $NPM_CACHE'
             }
         }
 
-        stage('Type check') {
-            steps {
-                sh 'npx tsc --noEmit'
-            }
-        }
+        stage('Validate') {
+            parallel {
+                stage('Type check') {
+                    steps {
+                        sh 'npx tsc --noEmit'
+                    }
+                }
 
-        stage('Run tests') {
-            steps {
-                sh '''
-                    set -euo pipefail
-                    mkdir -p coverage
-                    npm run test:ci
-                '''
-            }
-            post {
-                always {
-                    junit(testResults: 'coverage/junit.xml', allowEmptyResults: true)
-                    archiveArtifacts(
-                        artifacts: 'coverage/**',
-                        fingerprint: true,
-                        allowEmptyArchive: true
-                    )
+                stage('Run tests') {
+                    steps {
+                        sh '''
+                            set -euo pipefail
+                            mkdir -p coverage
+                            npm run test:ci
+                        '''
+                    }
+                    post {
+                        always {
+                            junit(testResults: 'coverage/junit.xml', allowEmptyResults: true)
+                            archiveArtifacts(
+                                artifacts: 'coverage/**',
+                                fingerprint: true,
+                                allowEmptyArchive: true
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -61,8 +66,10 @@ pipeline {
             steps {
                 sh """
                     docker build \
-                    --build-arg VITE_API_URL=\${VITE_API_URL} \
-                    -t world-cup-poll-frontend:latest .
+                        --cache-from world-cup-poll-frontend:latest \
+                        --build-arg BUILDKIT_INLINE_CACHE=1 \
+                        --build-arg VITE_API_URL=\${VITE_API_URL} \
+                        -t world-cup-poll-frontend:latest .
                 """
                 sh 'docker rm -f ${CONTAINER_NAME} || true'
                 sh '''
@@ -177,10 +184,10 @@ Check the Jenkins console output and test reports for details.
             }
         }
         always {
-            sh 'docker image prune -f || true'
+            sh 'docker image prune -f --filter "dangling=true" || true'
         }
         cleanup {
-            cleanWs(notFailBuild: true, deleteDirs: true)
+            cleanWs(notFailBuild: true, deleteDirs: true, excludePatterns: [[pattern: '.npm-cache/**']])
         }
     }
 }
