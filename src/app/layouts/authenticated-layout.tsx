@@ -49,7 +49,7 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 md:min-h-16 md:flex-row md:items-center md:justify-between md:gap-4 md:px-8 md:py-0">
           <Link
             to={ROUTES.home}

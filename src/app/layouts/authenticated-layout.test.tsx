@@ -45,7 +45,17 @@ describe('AuthenticatedLayout', () => {
         .toBeInTheDocument()
     })
 
-    await user.click(screen.getByRole('button', { name: /notificacoes/i }))
+    const notificationButton = await screen.findByRole('button', {
+      name: /notificacoes/i,
+    })
+
+    await user.click(notificationButton)
+
+    const acceptButton = await screen.findByRole('button', {
+      name: /aceitar/i,
+    })
+
+    await user.click(acceptButton)
 
     expect(await screen.findByText(mockPoll.title)).toBeInTheDocument()
 
