@@ -51,19 +51,17 @@ describe('AuthenticatedLayout', () => {
 
     await user.click(notificationButton)
 
+    expect(await screen.findByText(mockPoll.title)).toBeInTheDocument()
+
     const acceptButton = await screen.findByRole('button', {
       name: /aceitar/i,
     })
 
     await user.click(acceptButton)
 
-    expect(await screen.findByText(mockPoll.title)).toBeInTheDocument()
-
-    await user.click(
-      await screen.findByRole('button', {
-        name: /aceitar/i,
-      }),
-    )
+    await waitFor(() => {
+      expect(capturedBody).toHaveBeenCalledWith({ status: 'accepted' })
+    })
 
     await waitFor(() => {
       expect(
