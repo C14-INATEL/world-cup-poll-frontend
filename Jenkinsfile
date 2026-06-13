@@ -64,12 +64,18 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh """
-                    docker build \
-                        --build-arg VITE_API_URL=\${VITE_API_URL} \
-                        -t world-cup-poll-frontend:latest .
-                """
+                withCredentials([
+                    string(credentialsId: 'VITE_API_URL', variable: 'VITE_API_URL')
+                ]) {
+                    sh '''
+                        docker build \
+                            --build-arg VITE_API_URL="$VITE_API_URL" \
+                            -t world-cup-poll-frontend:latest .
+                    '''
+                }
+
                 sh 'docker rm -f ${CONTAINER_NAME} || true'
+
                 sh '''
                     docker run -d \
                         --name ${CONTAINER_NAME} \
