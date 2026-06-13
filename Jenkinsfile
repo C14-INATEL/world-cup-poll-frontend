@@ -15,7 +15,7 @@ pipeline {
         IMAGE_NAME     = 'world-cup-poll-frontend'
         CONTAINER_NAME = 'world-cup-poll-frontend'
         HOST_PORT      = '3000'
-        NOTIFICATION_EMAILS = 'viniciusgsimoni@gmail.com, joaovitorlucena000@gmail.com'
+        NOTIFICATION_EMAILS = 'viniciusgsimoni@gmail.com, joaovitorlucena000@gmail.com, zeca1609@gmail.com
         NPM_CACHE = '/var/jenkins_home/.npm-cache'
     }
 
