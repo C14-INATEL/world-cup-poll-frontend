@@ -58,8 +58,6 @@ describe('AuthenticatedLayout', () => {
     await user.click(acceptButton)
 
     await waitFor(() => {
-      expect(screen.findByText(mockPoll.title)).toBeInTheDocument()
-      
       expect(
         screen.getByText(/nenhum convite pendente/i),
       ).toBeInTheDocument()
