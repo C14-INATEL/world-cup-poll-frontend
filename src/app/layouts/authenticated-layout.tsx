@@ -31,18 +31,15 @@ function getUserInitials(name: string) {
 export function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, isAuthLoading } = useAuth();
   const { pathname } = useLocation();
-  const invitesQuery = useUserInvitesQuery(Boolean(user));
+
+  const { data: invites = [], ...invitesQuery } = useUserInvitesQuery(Boolean(user));
   const respondInviteMutation = useRespondInviteMutation();
 
   const userInitials = user?.name ? getUserInitials(user.name) : "U";
-  const activeInvites =
-    invitesQuery.data?.filter((invite) => invite.status === "pending") ?? [];
+  const activeInvites = invites.filter((invite) => invite.status === "pending");
   const hasInvites = activeInvites.length > 0;
 
-  const handleInviteResponse = async (
-    inviteId: string,
-    status: "accepted" | "declined",
-  ) => {
+  const handleInviteResponse = async (inviteId: string, status: "accepted" | "declined") => {
     await respondInviteMutation.mutateAsync({ id: inviteId, status });
     toast.success(status === "accepted" ? "Convite aceito!" : "Convite recusado.");
   };
@@ -75,7 +72,7 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
                     to={item.to}
                     className={cn(
                       "inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-                      isActive && " text-foreground "
+                      isActive && " text-foreground ",
                     )}
                   >
                     <item.icon aria-hidden="true" className="size-4" />
@@ -108,9 +105,7 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
                   <Menu.Popup className="w-[min(calc(100vw-2rem),24rem)] origin-(--transform-origin) rounded-lg border border-border bg-popover p-1 text-sm text-popover-foreground shadow-lg outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
                     <div className="px-3 py-2">
                       <p className="font-medium">Notificacoes</p>
-                      <p className="text-xs text-muted-foreground">
-                        Convites de grupos recebidos.
-                      </p>
+                      <p className="text-xs text-muted-foreground">Convites de grupos recebidos.</p>
                     </div>
                     <Menu.Separator className="my-1 h-px bg-border" />
 
@@ -122,7 +117,7 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
 
                     {invitesQuery.isError && (
                       <div className="px-3 py-4 text-sm text-destructive">
-                        Nao foi possivel carregar as notificacoes.
+                        Não foi possivel carregar as notificações.
                       </div>
                     )}
 
@@ -222,3 +217,4 @@ export function AuthenticatedLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
+
