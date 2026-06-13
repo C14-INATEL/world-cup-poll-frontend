@@ -66,7 +66,6 @@ pipeline {
             steps {
                 sh """
                     docker build \
-                        --cache-from world-cup-poll-frontend:latest \
                         --build-arg VITE_API_URL=\${VITE_API_URL} \
                         -t world-cup-poll-frontend:latest .
                 """
